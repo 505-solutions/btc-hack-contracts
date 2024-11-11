@@ -6,9 +6,17 @@ import {ISwapRouter} from "../interfaces/ISwapRouter.sol";
 
 import {ERC20} from "solmate/src/tokens/ERC20.sol";
 
+import {Test, console} from "forge-std/Test.sol";
+
 /// @title Mock UniV3
 /// @dev This contract is used to replicate the main UniswapV3 contract logic
 contract MockUniswapV3 {
+    // EVENTS
+    event MintEvent(uint256 tokenId, uint128 liquidity, uint256 amount0, uint256 amount1);
+    event DecreaseLiquidityEvent(uint256 tokenId, uint256 amount0, uint256 amount1);
+    event CollectEvent(uint256 amount0, uint256 amount1);
+
+    // STORAGE VARIABLES
     address[] s_tokens;
     uint256[] s_balances;
     uint256 s_tokenId;
@@ -63,6 +71,8 @@ contract MockUniswapV3 {
 
         s_liquidity[s_tokenId] = liquidity;
 
+        emit MintEvent(s_tokenId, liquidity, params.amount0Desired, params.amount1Desired);
+
         return (s_tokenId, liquidity, params.amount0Desired, params.amount1Desired);
     }
 
@@ -82,6 +92,8 @@ contract MockUniswapV3 {
         ERC20(s_tokens[1]).transfer(msg.sender, amount1);
 
         s_liquidity[params.tokenId] -= params.liquidity;
+
+        emit DecreaseLiquidityEvent(params.tokenId, amount0, amount1);
 
         return (amount0, amount1);
     }

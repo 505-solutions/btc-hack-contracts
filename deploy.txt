@@ -1,0 +1,44 @@
+# forge create --rpc-url {RPC_URL} --private-key {PRIVATE_KEY} src/Verifier.sol:Halo2Verifier
+
+
+
+
+1) Deploy 2 mock ERC20 contracts
+
+2) Call mint on both those contracts
+
+3) Deploy the mockUniV3 contract
+
+4) Transfer some tokens to the mockUniV3 contract
+
+5) Deploy the vault strategy contract contract
+
+
+
+
+forge script script/DeploymentScript.s.sol:DeploymentVerifier --rpc-url https://rpc.testnet.citrea.xyz --broadcast
+
+
+weth deployed at: 0xD000c22719930511aCc1cd6482F5A5b944E1Ec01
+usdc deployed at: 0x977F4b2081478999e1295a4b9fD9C14dfa279ECd
+MockUniV3 deployed at: 0xc04625c8d25bD8bF6788AB53457080A0B4b32329
+verifier: contract Halo2Verifier 0xDfD349eC493C6afC77F859d00c8f03B36f9842b9
+strategy: contract AIStrategy 0x2e293Bd3Bc02e83D3ef7794C4F64E4F1D1729Fb6
+
+
+
+
+forge verify-contract \
+    --chain-id 5115 \
+    --constructor-args $(cast abi-encode "constructor(address,string,string,address,address,address,uint256[3],uint256[3])" \
+0xD000c22719930511aCc1cd6482F5A5b944E1Ec01 \
+"AIStrategy" \
+"AIS" \
+0xc04625c8d25bD8bF6788AB53457080A0B4b32329 \
+0xc04625c8d25bD8bF6788AB53457080A0B4b32329 \
+0xDfD349eC493C6afC77F859d00c8f03B36f9842b9 \
+[7455504813211,2953758299944270168064,1838876263346026577920] \
+[1729926753534472704,262951735771738,0]) \
+--verifier-url https://explorer.testnet.citrea.xyz/api \
+0x2e293Bd3Bc02e83D3ef7794C4F64E4F1D1729Fb6 \
+AIStrategy
